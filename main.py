@@ -28,29 +28,21 @@ def read_tasks():
             tasks_dict["low"].append(line)
 
 
+def get_dict(priority):
+    return "high" if priority == 1 else "low"
+
+
 def add_task(name, priority):
     t = Task(name, priority)
-    if priority == 1:
-        if name not in tasks_dict["high"]:
-            tasks_dict["high"].append((t))
-    elif priority == 2:
-        if name not in tasks_dict["low"]:
-            tasks_dict["low"].append((t))
+    tasks_dict[get_dict(priority)].append(t)
 
 
 def remove_task(name, priority):
     t = Task(name, priority)
-    if priority == 1:
-        for task in tasks_dict["high"]:
-            if task.name == t.name:
-                tasks_dict["high"].remove(task)
-
-    elif priority == 2:
-        for task in tasks_dict["low"]:
-            if task.name == t.name:
-                tasks_dict["low"].remove(task)
-
-
+    dict_choice = get_dict(priority)
+    for task in tasks_dict[dict_choice]:
+        if task.name == t.name:
+            tasks_dict[dict_choice].remove(task)
 
 def print_tasks():
     for p, t in tasks_dict.items():
