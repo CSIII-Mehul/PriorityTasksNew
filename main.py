@@ -1,81 +1,141 @@
+from math import *
+ 
 from Task import Task
+ 
+ 
+class main:
+   file1 = open("tasks.txt", "r+")
+ 
+   boole = True
+   sel = -1
+   Mlists = []
+   Slists = []
+   priority = -1
+   save = 1
+   in_mainTasks = False
+   in_sideTasks = False
+   tasklist = []
+   tasklist = file1.readlines()
+  # Mlists.append(""+ tasklist[2])
+   for task in tasklist:
+       task = task.strip()
+       if task == "Main Tasks":
+           in_mainTasks = True
+           in_sideTasks = False
+       elif task.strip() == "":
+           continue
+       elif task == "Side Tasks":
+           in_mainTasks = False
+           in_sideTasks = True
+ 
+       if in_mainTasks:
+           if task != "Main Tasks":
+            Mlists.append(task)
+       elif in_sideTasks:
+           if task != "Side Tasks":
+            Slists.append(task)
+ 
+       # and (tasklist[1] in ("ABCDEFGHIJKLMNOPQRSTUVWYXYZabsdefghijklmnopqrstuvwxyz") or tasklist[1] in ("123456789!@#$%^&*()<>?\\"))
+   #print(Mlists[0])
+ 
+   while boole:
+       print("\n1. Add a task to end of a list")
+       print("2. Print tasks")
+       print("3. Remove a task")
+       print("4. Clear lists")
+       print("5. exit")
+       sel = int(input("Select an option"))
+ 
+       if sel == 1:
+           print(" Task properties")
+           name = input("what is the name of the task?")
+           while priority < 0 or priority > 2:
+               try:
+                   priority = int(input("Press 1 for main task and 2 for side task."))
+               except ValueError:
+                   print("give an integer")
+ 
+           a = Task(name, priority)
+           if a.getPriority() == 1:
+               Mlists.append(a.name)
+               # file1.write("\n  "+a.name)
+ 
+           elif a.getPriority() == 2:
+               Slists.append(a.name)
+               # file1.write("\n  "+a.name)
+           if save == 1:
+              file1.close()
+              file1 = open("tasks.txt", "w")
+              file1.write("-------")
+              file1.write("\nMain Tasks\n")
+              for task in range (len(Mlists)):
+                  a = ""+Mlists[task]
+                  file1.write(a)
+                  file1.write("\n")
+              file1.write("\nSide Tasks\n")
+              for task in range (len(Slists)):
+                a= ""+Slists[task]
+                file1.write(a)
+                file1.write("\n")
+ 
+           file1.close()
+           priority = -1
+       elif sel == 2:
+        file1 = open("tasks.txt", "r")
+        z = file1.readlines()
+        for index in z:
+           print(index)
+        file1.close()
+       
+       elif sel == 3:
+            name = input("what is the name of the task you want to remove?")
+            for i in range(len(Mlists)):
+                if (name == Mlists[i]):
+                   Mlists.remove(name)
+                   if(i == (len(Mlists)-1)):
+                     break
+            for i in range(len(Slists)):         
+                if (name == Slists[i]):
+                   Slists.remove(name)
+                   if(i == (len(Slists)-1)):
+                     break
+            file1.close()
+            file1 = open("tasks.txt", "w")
+            file1.write("-------")
+            file1.write("\nMain Tasks\n")
+            for task in range (len(Mlists)):
+                file1.write(Mlists[task])
+                file1.write("\n")
+            file1.write("\nSide Tasks\n")
+            for task in range (len(Slists)):
+                file1.write(Slists[task])
+                file1.write("\n")
+            file1.close()
+       elif sel == 4:
+           clearing = int(input("Press 1 to clear Main Tasks, 2 to clear Side Tasks, and 3 to clear both."))
 
+           if clearing == 1:
+              Mlists.clear()
+           elif clearing == 2:
+              Slists.clear()
+           elif clearing == 3:
+              Mlists.clear()
+              Slists.clear()
 
-tasks_dict = {"high":[],
-              "low":[]}
+           file1.close()
+           file1 = open("tasks.txt", "w")
+           file1.write("-------")
+           file1.write("\nMain Tasks\n")
+           for task in range (len(Mlists)):
+                file1.write(Mlists[task])
+                file1.write("\n")
+           file1.write("\nSide Tasks\n")
+           for task in range (len(Slists)):
+                file1.write(Slists[task])
+                file1.write("\n")
+           file1.close()
 
-def read_tasks():
-    lines = []
-    with open("tasks_list.txt", "r+") as f:
-        lines = f.readlines()
-
-    in_main_task = False
-    in_sub_task = False
-
-    for line in lines:
-        if line == "Main Tasks":
-            in_main_task = True
-            in_sub_task = False
-        elif line.strip() == "":
-            continue
-        elif line == "Sub Tasks":
-            in_sub_task = True
-            in_main_task = False
-
-        if in_main_task:
-            tasks_dict["high"].append(line)
-        elif in_sub_task:
-            tasks_dict["low"].append(line)
-
-
-def get_dict(priority):
-    return "high" if priority == 1 else "low"
-
-
-def add_task(name, priority):
-    t = Task(name, priority)
-    tasks_dict[get_dict(priority)].append(t)
-
-
-def remove_task(name, priority):
-    t = Task(name, priority)
-    dict_choice = get_dict(priority)
-    for task in tasks_dict[dict_choice]:
-        if task.name == t.name:
-            tasks_dict[dict_choice].remove(task)
-
-def print_tasks():
-    for p, t in tasks_dict.items():
-        for n in t:
-            print(p, (n.name, n.priority))
-
-def save_tasks():
-    with open("tasks_list.txt", "w+") as f:
-        f.write("Main Tasks\n")
-        for task in tasks_dict["high"]:
-            f.write(task.name)
-            f.write('\n')
-        f.write("\nSub Tasks\n")
-        for task in tasks_dict["low"]:
-            f.write(task.name)
-            f.write('\n')
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    add_task("Homework", 1)
-    add_task("Minecraft", 2)
-    add_task("Library", 1)
-    add_task("Work", 1)
-    add_task("Basketball", 2)
-    add_task("Soccer", 2)
-    remove_task("Minecraft", 2)
-    print_tasks()
-    print('------------------------')
-    save_tasks()
-    read_tasks()
-    add_task("Cricket",2 )
-    print_tasks()
+       elif sel == 5:
+        boole = False
+ 
+   file1.close()
